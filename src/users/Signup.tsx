@@ -1,16 +1,31 @@
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { signupFormData } from "../Types/Type";
+import axios from "axios";
 
 const Signup = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<signupFormData>();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    toast.success("Signup successful!");
+  const onSubmit = async (data: signupFormData) => {
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    const { confirmPassword, ...formData } = data;
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/signup", formData);
+      console.log(response.data);
+      toast.success("Signup successful!");
+    } catch (error: any) {
+      console.error("Signup error:", error.response?.data || error.message);
+      toast.error("Signup failed. Please try again.");
+    }
   };
 
   return (
@@ -25,7 +40,7 @@ const Signup = () => {
             {...register("firstName", { required: "Please enter First Name" })}
             className="w-full border p-2 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-          {errors.firstName && <p className="text-red-600">{errors.firstName.message as string}</p>}
+          {errors.firstName && <p className="text-red-600">{errors.firstName.message}</p>}
         </div>
 
         <div>
@@ -36,7 +51,7 @@ const Signup = () => {
             {...register("lastName", { required: "Please enter Last Name" })}
             className="w-full border p-2 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-          {errors.lastName && <p className="text-red-600">{errors.lastName.message as string}</p>}
+          {errors.lastName && <p className="text-red-600">{errors.lastName.message}</p>}
         </div>
 
         <div>
@@ -47,7 +62,7 @@ const Signup = () => {
             {...register("email", { required: "Please enter Email" })}
             className="w-full border p-2 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-          {errors.email && <p className="text-red-600">{errors.email.message as string}</p>}
+          {errors.email && <p className="text-red-600">{errors.email.message}</p>}
         </div>
 
         <div>
@@ -58,7 +73,7 @@ const Signup = () => {
             {...register("password", { required: "Please enter Password" })}
             className="w-full border p-2 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-          {errors.password && <p className="text-red-600">{errors.password.message as string}</p>}
+          {errors.password && <p className="text-red-600">{errors.password.message}</p>}
         </div>
 
         <div>
@@ -69,7 +84,7 @@ const Signup = () => {
             {...register("confirmPassword", { required: "Please confirm your Password" })}
             className="w-full border p-2 rounded shadow-md focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-          {errors.confirmPassword && <p className="text-red-600">{errors.confirmPassword.message as string}</p>}
+          {errors.confirmPassword && <p className="text-red-600">{errors.confirmPassword.message}</p>}
         </div>
 
         <button
